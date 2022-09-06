@@ -45,3 +45,22 @@
 
 <div><div>Related Topics</div><div><li>栈</li><li>数组</li><li>哈希表</li><li>单调栈</li></div></div><br><div><li>👍 820</li><li>👎 0</li></div>
 ### 单调栈复习
+
+- 暴力循环
+```
+for(int i = 0; i < n; i ++)
+    for(int j = i - 1; i >= 0; i --)
+        if(nums[j] < nums[i]) res = nums[j];
+```
+
+- 单调栈优化
+    - 可以发现有这样的规律，如果x下标小于y，而x > y。当存在y的时候，x永远不可能符合条件。故可以删除x。
+    - 于是这样删除后，将会形成一个上升数列。
+    - 利用栈快速对队首元素进行操作。
+```aidl
+for(int i = 0; i < n; i ++){
+    while(!stack.isEmpty() && stack.peek() > nums[i]) stack.pop();
+    res[i] = stack.isEmpty() ? -1 : stack.peek();
+    stack.push(nums[i]);
+}
+```

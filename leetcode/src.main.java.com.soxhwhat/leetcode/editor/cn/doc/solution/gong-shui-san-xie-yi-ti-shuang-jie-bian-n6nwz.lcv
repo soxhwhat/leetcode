@@ -1,0 +1,103 @@
+## 模拟
+
+一个朴素的做法是直接根据题意进行模拟，对于每个 $ans[i]$ 而言，先找到 $nums1[i]$ 在 $nums2$ 的位置 $j$，然后接着往后找到最近一个比其大的数，如果 $j$ 走到结尾尚未出现合法的 $ans[i]$，则是 $-1$。
+
+代码：
+
+* []
+
+```Java
+class Solution {
+    public int[] nextGreaterElement(int[] nums1, int[] nums2) {
+        int n = nums1.length, m = nums2.length;
+        int[] ans = new int[n];
+        for (int i = 0; i < n; i++) {
+            int j = 0;
+            while (j < m && nums1[i] != nums2[j]) j++;
+            while (j < m && nums1[i] >= nums2[j]) j++;
+            ans[i] = j < m ? nums2[j] : -1;
+        }
+        return ans;
+    }
+}
+```
+
+* 时间复杂度：$O(n * m)$
+* 空间复杂度：$O(n)$
+
+---
+
+## 单调栈
+
+当题目出现「找到最近一个比其大的元素」的字眼时，自然会想到「单调栈」。
+
+具体的，由于我们目标是找到某个数其在 $nums2$ 的右边中第一个比其大的数，因此我们可以对 $nums2$ 进行逆序遍历。
+
+我们在遍历 $nums2$ 时，实时维护一个单调栈，当我们遍历到元素 $nums2[i]$ 时，可以先将栈顶中比 $nums2[i]$ 小的元素出栈，最终结果有两种可能：
+
+1. 栈为空，说明 $nums2[i]$ 之前（右边）没有比其大的数；
+
+2. 栈不为空， 此时栈顶元素为 $nums2[i]$ 在 $nums2$ 中（右边）最近的比其大的数。
+
+再利用数组中数值各不相同，在遍历 $nums2$ 的同时，使用哈希表记录每个 $nums2[i]$ 对应目标值是多少即可。
+
+> 补充：评论区较多同学说，不理解为什么「倒序遍历」，这里的「倒序遍历」是为了「正向解决问题」。
+> 由于我们找的是某个数右边第一个比其大的数，因此我们倒序遍历，可以确保需要找的数已经被处理过。
+> 当然如果还是不好理解的话，我在 $P2$ 提供了「正向遍历」的代码。
+
+代码：
+
+* []
+
+```Java
+class Solution {
+    public int[] nextGreaterElement(int[] nums1, int[] nums2) {
+        int n = nums1.length, m = nums2.length;
+        Deque<Integer> d = new ArrayDeque<>();
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = m - 1; i >= 0; i--) {
+            int x = nums2[i];
+            while (!d.isEmpty() && d.peekLast() <= x) d.pollLast();
+            map.put(x, d.isEmpty() ? -1 : d.peekLast());
+            d.addLast(x);
+        }
+        int[] ans = new int[n];
+        for (int i = 0; i < n; i++) ans[i] = map.get(nums1[i]);
+        return ans;
+    }
+}
+```
+
+* []
+
+```Java
+class Solution {
+    public int[] nextGreaterElement(int[] nums1, int[] nums2) {
+        int n = nums1.length, m = nums2.length;
+        Deque<Integer> d = new ArrayDeque<>();
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i : nums2) {
+            while (!d.isEmpty() && d.peekLast() < i) {
+                map.put(d.pollLast(), i);
+            }
+            d.addLast(i);
+        }
+        int[] ans = new int[n];
+        for (int i = 0; i < n; i++) ans[i] = map.getOrDefault(nums1[i], -1);
+        return ans;
+    }
+}
+```
+
+* 时间复杂度：维护单调栈，每个元素最多入栈出栈一次，复杂度为 $O(m)$；构造答案复杂度为 $O(n)$。整体复杂度为 $O(n + m)$
+* 空间复杂度：$O(m)$
+
+---
+
+## 最后
+
+**如果有帮助到你，请给题解点个赞和收藏，让更多的人看到 ~ ("▔□▔)/**
+
+也欢迎你 [关注我](https://oscimg.oschina.net/oscnet/up-19688dc1af05cf8bdea43b2a863038ab9e5.png)（公主号后台回复「送书」即可参与长期看题解学算法送实体书活动）或 加入[「组队打卡」](https://leetcode-cn.com/u/ac_oier/)小群 ，提供写「证明」&「思路」的高质量题解。
+
+所有题解已经加入 [刷题指南](https://github.com/SharingSource/LogicStack-LeetCode/wiki)，欢迎 star 哦 ~

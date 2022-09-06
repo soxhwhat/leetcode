@@ -1,0 +1,30 @@
+class Solution {
+public:
+    vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {
+        int n1 = nums1.size();
+        int n2 = nums2.size();
+        vector<int> res(n2);
+        stack<int> stk;
+        
+        for(int i = n2 - 1; i >= 0; i --){
+            while(stk.size() && stk.top() <= nums2[i]) stk.pop();
+            if(stk.empty()) res[i] = -1;
+            else res[i] = stk.top();
+            stk.push(nums2[i]);
+        }
+        
+        unordered_map<int, int> hash;
+        for(int i = 0; i < n2; i++)
+            hash[nums2[i]] = i;
+        vector<int> q;
+        for(auto x : nums1)
+            q.push_back(res[hash[x]]);
+        
+            
+
+    
+    return q;
+    }
+};
+//runtime:4 ms
+//memory:8.8 MB
