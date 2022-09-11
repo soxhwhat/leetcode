@@ -1,6 +1,5 @@
 package leetcode.editor.cn;
 
-import com.sun.xml.internal.ws.util.StringUtils;
 
 /**
  * 重新排列单词间的空格
@@ -21,7 +20,7 @@ class Solution {
         int spaceCnt = (int) text.chars().filter(x -> x == ' ').count();
         int spaceRepeat = wordCnt <= 1? 0 : spaceCnt / (wordCnt - 1);
         int lastRepeat = spaceCnt - spaceRepeat * (wordCnt - 1);
-        return String.join(StringUtils.repeat(" ",spaceRepeat), arr) + " ".repeat(lastRepeat);
+        return String.join(" ".repeat(spaceRepeat), arr) + " ".repeat(lastRepeat);
 
     }
 }
