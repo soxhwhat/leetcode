@@ -29,7 +29,9 @@ class P769_MaxChunksToMakeSorted {
             }
             int res = 1;
             for (int i = 0; i < n - 1; i++) {
-                if (leftMax[i] <= rightMin[i + 1]) res++;
+                if (leftMax[i] <= rightMin[i + 1]) {
+                    res++;
+                }
 
             }
             return res;
