@@ -28,7 +28,7 @@ class P670_MaximumSwap {
             }
             for (int i = 0; i < n; i++) {
                 if (chars[i] < chars[rightMax[i]]) {
-                    char temp = chars[rightMax[i]];
+                    char temp;
                     temp = chars[i];
 
                     chars[i] = chars[rightMax[i]];
