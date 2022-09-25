@@ -1,0 +1,32 @@
+    class Solution {
+        int[] st = {0, 1, 8};
+        int[] vol = {2, 5, 6, 9};
+        public int rotatedDigits(int n) {
+            int res = 0;
+            for (int i = 1; i <= n; i++) {
+                if (check(i)) res++;
+            }
+            return res;
+        }
+
+        private boolean check(int i) {
+            boolean flag = false;
+            while (i > 0) {
+                int t = i % 10;
+                if (Arrays.binarySearch(st, t) >= 0) {
+                    i /= 10;
+                    continue;
+                }
+                if (Arrays.binarySearch(vol, t) >= 0) {
+                    flag = true;
+                    i /= 10;
+                    continue;
+                }
+                return false;
+            }
+            return flag;
+        }
+    }
+
+//runtime:6 ms
+//memory:38.2 MB

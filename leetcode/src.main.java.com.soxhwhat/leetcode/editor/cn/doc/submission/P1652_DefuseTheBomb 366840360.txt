@@ -1,0 +1,21 @@
+    class Solution {
+        public int[] decrypt(int[] code, int k) {
+            int n = code.length;
+            int[] res = new int[n];
+            if (k == 0) return res;
+            int[] sum = new int[n * 2 + 10];
+            //构造前缀和数组
+            for (int i = 1; i <= 2 * n; i++) sum[i] += sum[i - 1] + code[(i - 1) % n];
+            for (int i = 1; i <= n; i++) {
+                if (k < 0) {
+                    res[i - 1] = sum[i + n - 1] - sum[i + k + n - 1];
+                } else {
+                    res[i - 1] = sum[i + k] - sum[i];
+                }
+            }
+            return res;
+        }
+    }
+
+//runtime:0 ms
+//memory:41.4 MB

@@ -1,0 +1,44 @@
+### 解题思路
+
+每位都在(2, 5, 6, 9, 0, 1, 8)内，至少一位在(2, 5, 6, 9)内
+
+### 代码
+
+* java
+
+```java
+class Solution {
+    public int rotatedDigits(int n) {
+        // 每位都在(2, 5, 6, 9, 0, 1, 8)内，至少一位在(2, 5, 6, 9)内
+        int ans = 0;
+        for (int i = 1; i <= n; i++) {//计算从 1 到 N 中有多少个数 X 是好数？
+            int cntMirror = 0; //计算2, 5, 6, 9的个数
+            int cntValid = 0;//计算2, 5, 6, 9, 0, 1, 8的个数
+            String handle = String.valueOf(i);
+            for (char c : handle.toCharArray()) {
+                switch (c) {
+                    case '2':
+                    case '5':
+                    case '6':
+                    case '9':
+                        cntMirror++;
+                        cntValid++;
+                        break;
+                    case '0':
+                    case '1':
+                    case '8':
+                        cntValid++;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (cntMirror > 0 && cntValid == handle.length()) {
+                ans++;
+            }
+        }
+        return ans;
+    }
+}
+```
+
