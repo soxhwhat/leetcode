@@ -1,0 +1,55 @@
+### 解题思路
+
+我好兴奋-没来得及看大家的水平自己做的
+![image.png](https://pic.leetcode-cn.com/1664181567-hUGlil-image.png)
+
+构建一个比nums大两个数字的数组 去遍历填充他
+现在应该好点了吧-- 哦 好吧不符合要求(O(N) 时间 O(1) 的空间)
+
+### 代码
+
+* []
+
+```java
+class Solution {
+    public int[] missingTwo(int[] nums) {
+        int length = nums.length;
+        int out[] = new int[2];
+        Arrays.sort(nums);
+        for (int i = 0, j = 0, k = 0; i < length + 2;) {
+            if (j < length) {
+                if (nums[j] - 1 != i) {
+                    out[k++] = i + 1;
+                } else {
+                    j++;
+                }
+            } else {
+                out[k++] = i + 1;
+            }
+            i++;
+        }
+        return out;
+    }
+}
+```
+
+* []
+
+```java
+class Solution {
+    public int[] missingTwo(int[] nums) {
+        int length = nums.length;
+        int arr[] = new int[length + 2], out[] = new int[2];
+        for (int i = 0; i < length; i++) {
+            arr[nums[i] - 1] = nums[i];
+        }
+        for (int i = 0,j = 0; i < length + 2; i++) {
+            if (arr[i] == 0) {
+                out[j++] = i + 1;
+            }
+        }
+        return out;
+    }
+}
+```
+
