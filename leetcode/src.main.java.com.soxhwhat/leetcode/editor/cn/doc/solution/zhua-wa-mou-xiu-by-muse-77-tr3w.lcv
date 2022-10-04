@@ -1,0 +1,89 @@
+# 解题思路
+
+根据题意，我们可以知道“LX”可以替换为“XL”，“XR”可以替换为“RX”，所以，我们可以将其看成是X位置不变（即：以X为“轴”），去移动字符'L'或者'R'。那么根据题目描述的变化规则，'`L`'是只能**向左侧移动**，即：“XL”——>“LX”；'`R`'是只能**向右侧移动**，即：“RX”——>“XR”;
+
+那么我们发现这种规律之后，我们就可以只关注字符'R'和'L'了。判断规律如下所示：
+
+> **条件一**：start中每位字符'L'的index，都要 **大于等于** end中每位字符'L'的index。
+> **条件二**：start中每位字符'R'的index，都要 **小于等于** end中每位字符'R'的index。
+
+只有同时满足了上述两个条件，才可以确定start中的字符'R'和字符'L'是可以移动成为end中的字符'R'和字符'L'。而且，题目中的提示部分，已经告诉我们**start和len的长度相同**，并且start和end中的字符串仅限于'`L`', '`R`'和'`X`'，那么我们只需要再确定start与end中的字符'R'与字符'L'是一一对应的即可（即：个数都是相同的，可以一一对应上）。具体逻辑，请看下图所示：
+
+![image.png](https://pic.leetcode-cn.com/1664690884-tVCPoD-image.png)
+
+# 代码实现
+
+## 1> 实现1
+
+* java
+
+```java
+class Solution {
+    public boolean canTransform(String start, String end) {
+        char[] startArray = start.toCharArray(), endArray = end.toCharArray();
+        int j = 0, length = start.length();
+        for (int i = 0; i < length; i++) {
+            if (startArray[i] == 'X') continue;
+            for (; j < length; j++) {
+                 if (endArray[j] != 'X') break;               
+            }
+            if (j == length || startArray[i] != endArray[j]) return false;
+            if (startArray[i] == 'L' && i < j) return false;// 'L'只能往左走
+            if (startArray[i] == 'R' && i > j) return false;// 'R'只能往右走
+            j++;
+        }
+        for (;j < length; j++)
+            if (endArray[j] != 'X') return false;
+        return true;
+    }
+}
+```
+
+![image.png](https://pic.leetcode-cn.com/1664690896-ybfPtZ-image.png)
+
+## 2> 实现2
+
+* java
+
+```java
+class Solution {
+    public boolean canTransform(String start, String end) {
+        char[] startArray = start.toCharArray(), endArray = end.toCharArray();
+        int sIndex = 0, eIndex = 0, length = start.length();
+        while (sIndex < length || eIndex < length) {
+            Character sChar = null, eChar = null;
+            for (int i = sIndex; i < length; i++) {
+                if (startArray[i] != 'X') {
+                    sIndex = i;
+                    sChar = startArray[i];
+                    break;
+                }
+            }
+            for (int j = eIndex; j < length; j++) {
+                if (endArray[j] != 'X') {
+                    eIndex = j;
+                    eChar = endArray[j];
+                    break;
+                }
+            }
+            if (sChar == null && eChar == null) return true;
+            if ((sChar == null && eChar != null) || (sChar != null && eChar == null)) return false;
+            if (!sChar.equals(eChar)) return false;
+            if (sChar == 'L' && sIndex < eIndex) return false;// 'L'只能往左走
+            if (sChar == 'R' && sIndex > eIndex) return false;// 'R'只能往右走
+            sIndex++; eIndex++;
+        }
+        
+        return true;
+    }
+}
+```
+
+![image.png](https://pic.leetcode-cn.com/1664690907-KzNOIt-image.png)
+
+今天的文章内容就这些了：
+
+> 写作不易，笔者几个小时甚至数天完成的一篇文章，只愿换来您几秒钟的 **点赞** & **分享** 。
+
+更多技术干货，欢迎大家关注公众号“**爪哇缪斯**” ~ \\(^o^)/ ~ 「干货分享，每天更新」
+

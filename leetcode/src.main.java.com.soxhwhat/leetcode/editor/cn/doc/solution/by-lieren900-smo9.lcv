@@ -1,0 +1,26 @@
+### 解题思路
+
+从后面来查找1，然后再从前遍历，如果有一个0，就返回false。
+
+### 代码
+
+* c
+
+```c
+bool checkOnesSegment(char * s){
+    int size = strlen(s);
+    int i;
+    int flag;
+    for(i = size - 1;i >= 0;i--){
+        if(s[i] == '1'){
+            flag = i;
+            break;
+        }
+    }
+    for(i = 0;i < flag;i++){
+        if(s[i] == '0') return false;
+    }
+    return true;
+}
+```
+
