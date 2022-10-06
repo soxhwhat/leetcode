@@ -21,26 +21,18 @@ class P777_SwapAdjacentInLrString {
     //leetcode submit region begin(Prohibit modification and deletion)
     class Solution {
         public boolean canTransform(String start, String end) {
-            if (start.length() != end.length()) {
-                return false;
+            int n = start.length();
+            int i = 0, j = 0;
+            while (i < n || j < n) {
+                while (i < n && start.charAt(i) == 'X') i++;
+                while (j < n && end.charAt(j) == 'X') j++;
+                if (i == n || j == n) return i == j;
+                if (start.charAt(i) != end.charAt(j)) return false;
+                if (start.charAt(i) == 'L' && i < j) return false;
+                if (start.charAt(i) == 'R' && i > j) return false;
+                i ++; j ++;
             }
-            int length = start.length(), j = 0;
-            char[] startArray = start.toCharArray();
-            char[] endArray = end.toCharArray();
-            for (int i = 0; i < length; i++) {
-                if (start.charAt(i) == 'X') continue;
-                for (; j < length; j++) {
-                    if (end.charAt(j) != 'X') break;
-                }
-                if (j == length || startArray[i] != endArray[j]) return false;
-                if (startArray[i] == 'L' && i < j) return false;// 'L'只能往左走
-                if (startArray[i] == 'R' && i > j) return false;// 'R'只能往右走
-                j++;
-            }
-            for (; j < length; j++)
-                if (endArray[j] != 'X') return false;
-            return true;
-
+            return i == j;
 
         }
     }
