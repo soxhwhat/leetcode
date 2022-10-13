@@ -15,25 +15,22 @@ class P769_MaxChunksToMakeSorted {
     class Solution {
         public int maxChunksToSorted(int[] arr) {
             int n = arr.length;
-            int[] leftMax = new int[n];
-            int[] rightMin = new int[n];
+            int[] left = new int[n];
+            int[] right = new int[n];
 
-            leftMax[0] = arr[0];
-            for (int i = 1; i < n; i++) {
-                leftMax[i] = Math.max(leftMax[i - 1], arr[i]);
+            left[0] = arr[0];
+            for(int i = 1; i < n; i ++) {
+                left[i] = Math.max(left[i - 1], arr[i]);
             }
-
-            rightMin[n - 1] = arr[n - 1];
-            for (int i = n - 2; i >= 0; i--) {
-                rightMin[i] = Math.min(rightMin[i + 1], arr[i]);
+            right[n - 1] = arr[n - 1];
+            for(int i = n - 2; i >= 0; i --) {
+                right[i] = Math.min(right[i + 1], arr[i]);
             }
             int res = 1;
-            for (int i = 0; i < n - 1; i++) {
-                if (leftMax[i] <= rightMin[i + 1]) {
-                    res++;
-                }
-
+            for(int i = 0; i < n - 1; i ++) {
+                if (left[i] <= right[i + 1]) res ++;
             }
+
             return res;
         }
     }
