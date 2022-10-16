@@ -1,0 +1,43 @@
+class Solution {
+        private static final int N = (int) (1e5 + 10), M = 2 * N;
+        int[] e = new int[M], ne = new int[M], h = new int[N], st = new int[N];
+        int idx;
+    public boolean possibleBipartition(int n, int[][] dislikes) {
+        idx = 0;
+        Arrays.fill(h, -1);
+        for (int[] dislike : dislikes) {
+            int a = dislike[0] - 1, b = dislike[1] - 1;
+            add(a, b);
+            add(b, a);
+        }
+        for (int i = 0; i < n; i++) {
+            if (st[i] == 0) {
+                if (!dfs(i, 1)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+
+    }
+
+    public void add(int a, int b) {
+        e[idx] = b;
+        ne[idx] = h[a];
+        h[a] = idx++;
+    }
+
+    boolean dfs(int u, int color) {
+        st[u] = color;
+        for (int i = h[u]; i != -1; i = ne[i]) {
+            int j = e[i];
+            if (st[j] == 0) {
+                if (!dfs(j, 3 - color)) return false;
+            } else if (st[j] == st[u]) return false;
+        }
+        return true;
+    }
+}
+
+//runtime:16 ms
+//memory:49.4 MB
