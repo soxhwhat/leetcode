@@ -16,24 +16,17 @@ class P904_FruitIntoBaskets {
     //leetcode submit region begin(Prohibit modification and deletion)
     class Solution {
         public int totalFruit(int[] fruits) {
-            int res = 0;
+            int res =  0;
             int n = fruits.length;
-            int[] count = new int[n];
-            for(int i = 0, j = 0, tot = 0; j < n; j ++) {
-                if (count[fruits[j]] == 0) {
-                    tot ++;
-                }
-                count[fruits[j]] ++;
+            int[] cnt = new int[n + 1];
+            for (int i = 0, j = 0, tot = 0; j < n; j ++) {
+                if (++ cnt[fruits[j]] == 1) tot ++;
                 while (tot > 2) {
-                    count[fruits[i]] --;
-                    if (count[fruits[i]] == 0)  tot --;
-                    i ++;
+                    if (-- cnt[fruits[i++]] == 0) tot --;
                 }
                 res = Math.max(res, j - i + 1);
             }
             return res;
-
-
         }
     }
 //leetcode submit region end(Prohibit modification and deletion)
