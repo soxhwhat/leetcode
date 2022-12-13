@@ -1,0 +1,120 @@
+## **方法一：** 动态规划
+
+首先我们用abcc来进行举例说明。对每一个字符进行分析，能产生的子序列如下：<br><br>
+
+* 
+
+```
+a:a
+ab:a, ab, b
+abc:[a, ab, b], [ac, abc, bc], [c]
+```
+
+到此可以发现，若字符串中无重复字符出现，那么对于新增的字符$s[i]$,方案数=前面字符的情况+拼接$s[i]$后的方案数 + $s[i]$单个字符。但是当有重复字母出现，上面的情况就不再适用了。
+
+* 
+
+```
+abcc: [a, ab, b, ac, abc, bc, c],[ac, abc, bc, acc, abcc, bcc, cc], [c] 
+```
+
+可以看出这时候就会产生重复的子序列。怎么避免重复的子序列呢？那么可以换一思路来进行拼接$s[i]$字符。<br><br>
+首先对于第二个$[\ ]$内的子序列是由前$i-1$个字符拼接$s[i]$产生的。第三个$[\ ]$内的子序列是$s[i]$字符本身。这两个集合相加是不会产生重复子序列。剩下的工作就是从第一个集合里面找出有效的子序列。<br><br>
+可以从第一个子序列看出$[ac, abc, bc, c]$这一部分与我们现有结果(第二个和第三个集合)是重复的。它们都由一个性质，都是由$s[i]$字符结尾。而剩下的字符$[a, ab, b]$都不是由$s[i]$结尾，不会产生重复。 <br><br>
+那么至此我们就可以计算前$i$个字符能够产生的子序列个数，**个数=前$i-1$字符产生的子序列拼接c的方案数 + $s[i]$字符本身 + 前i-1个字符中不以$s[i]$结尾的子序列方案数**。 那么就可以抽象出状态集合,前两个可以抽象为以$s[i]$字符结尾的集合，最后一个可以抽象为不以$s[i]$字符结尾的集合。<br><br>
+
+* 
+
+```
+状态集合：
+    dp[i][j]: 前i个字符以j字符结尾的子序列个数。这里的以j结尾的字符是指(char)('a'+j)
+状态计算：
+    1.以s[i]字符结尾的集合
+    dp[i][j] = sum(dp[i-1][k], k=0,1...26) + 1, if s[i] - 'a' == j
+    2.不以s[i]字符结尾的集合
+    dp[i][j] = dp[i - 1][j]                   , if s[i] - 'a' != j
+ans:
+    个数 = sum(dp[n][k], k=0,1...26)
+```
+
+- 时间复杂度：$O(nm), m=26, n$为字符长度
+- 空间复杂度：$O(nm)$
+
+* []
+
+```Java
+class Solution {
+    int mod = 1000000007;
+    public int distinctSubseqII(String s) {
+        int n = s.length();
+        char[] arr = (" " + s).toCharArray();
+        long[][] dp = new long[n + 1][26];
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < 26; j++) {
+                if (arr[i] - 'a' == j) {
+                    for (int k = 0; k < 26; k++) dp[i][j] = (dp[i][j] + dp[i - 1][k]) % mod;
+                    dp[i][j] += 1;
+                } else dp[i][j] = dp[i - 1][j];
+            }
+        }  
+        return (int)(Arrays.stream(dp[n]).sum() % mod);
+    } 
+}
+```
+
+---
+
+## 优化1：
+
+可以看出第i层只有j=s[i]字符才会有改变，其他值都是上一层i-1的结果。那么利用滚动数组优化<br><br>
+
+- 时间复杂度：$O(nm), m=26, n$为字符长度
+- 空间复杂度：$O(m)$
+
+* []
+
+```Java
+class Solution {
+    int mod = 1000000007;
+    public int distinctSubseqII(String s) {
+        int n = s.length();
+        char[] arr = (" " + s).toCharArray();
+        long[] dp = new long[26];
+        for (int i = 1; i <= n; i++) dp[arr[i] - 'a'] = (Arrays.stream(dp).sum() + 1) % mod;
+        return (int)(Arrays.stream(dp).sum() % mod);
+    } 
+}
+```
+
+---
+
+## **优化2：**
+
+对于求和的时候，可以看出每一次都是利用上一层全部的和进行计算，那么sum来保存前缀和即可。每次更新sum值<br><br>
+- 时间复杂度：$O(n)$
+- 空间复杂度：$O(m)$
+
+* []
+
+```Java
+class Solution {
+    int mod = 1000000007;
+    public int distinctSubseqII(String s) {
+        int n = s.length();
+        char[] arr = (" " + s).toCharArray();
+        long[] dp = new long[26];
+        long sum = 0;
+        for (int i = 1; i <= n; i++) {
+            int j = arr[i] - 'a';
+            long x = dp[j];
+            dp[j] = sum + 1;
+            sum = (sum + dp[j] - x + mod) % mod; //有减号避免为-,加上一个mod
+        }
+        return (int)(Arrays.stream(dp).sum() % mod); 
+    } 
+}
+```
+
+--- 
+
+如果有问题,欢迎评论区交流, 如果有帮助到你，请给题解点个赞和收藏哈~~~

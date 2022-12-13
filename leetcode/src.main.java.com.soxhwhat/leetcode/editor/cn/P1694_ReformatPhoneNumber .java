@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 class P1694_ReformatPhoneNumber{
     public static void main(String[] args) {
         Solution solution = new P1694_ReformatPhoneNumber().new Solution();
-        solution.reformatNumber("1-23-45 67");
+        solution.reformatNumber("123 4-567");
     }
 
     //leetcode submit region begin(Prohibit modification and deletion)
@@ -20,17 +20,20 @@ class Solution {
     public String reformatNumber(String number) {
         String reg = "[\\s-]";
         String[] split = number.split(reg);
-        String s = String.join("", split);
-        int n = s.length();
+        String join = String.join("", split);
+        int n = join.length();
         StringBuilder builder = new StringBuilder();
+        final String c = "-";
         for (int i = 0; i < n; i += 3) {
-            if (builder.length() != 0) builder.append("-");
-            if (i + 5 > n){
-                if (i + 3 >= n) builder.append(s.substring(i));
-                else builder.append(s.substring(i, i + 2)).append("-").append(s.substring(i + 2));
+            if (i != 0) {
+                builder.append(c);
+            }
+            if (i + 5 > n) {
+                if (i + 4 > n) builder.append(join.substring(i));
+                else builder.append(join.substring(i, i + 2)).append(c).append(join.substring(i + 2));
                 break;
             }
-            builder.append(s.substring(i, i + 3));
+            builder.append(join.substring(i, i + 3));
         }
         return builder.toString();
     }

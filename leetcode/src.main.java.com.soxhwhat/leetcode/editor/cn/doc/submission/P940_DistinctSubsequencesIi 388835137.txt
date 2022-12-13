@@ -1,20 +1,3 @@
-package leetcode.editor.cn;
-
-import java.util.Arrays;
-
-/**
- * 不同的子序列 II
- * distinct-subsequences-ii
- * 2022-10-21 18:15:30
- * @author soxhwhat
- */
-class P940_DistinctSubsequencesIi{
-    public static void main(String[] args) {
-        Solution solution = new P940_DistinctSubsequencesIi().new Solution();
-        solution.distinctSubseqII("aaa");
-    }
-
-    //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
     public int distinctSubseqII(String s) {
 
@@ -29,7 +12,6 @@ class Solution {
             int t = s.charAt(i - 1) - 'a';
             dp[i] = dp[i - 1] * 2 % MOD;
             if (last[t] >= 0) dp[i] -= dp[last[t]];
-            dp[i] %= MOD;
             last[t] = i - 1;
         }
         dp[n]--;
@@ -39,6 +21,9 @@ class Solution {
 
     }
 }
-//leetcode submit region end(Prohibit modification and deletion)
 
-}
+//total_testcases:110
+//total_correct:59
+//input_formatted:"zchmliaqdgvwncfatcfivphddpzjkgyygueikthqzyeeiebczqbqhdytkoawkehkbizdmcnilcjjlpoeoqqoqpswtqdpvszfaksn"
+//expected_output:97915677
+//code_output:742540726

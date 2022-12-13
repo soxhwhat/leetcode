@@ -1,0 +1,116 @@
+#### 方法1：利用map记录每次新加的个数 —— **题解思路出自左神**
+
+假设给定 s = [a,b,a,c,a]，长度为5的一个字符串
+
+**目的：找出前i个字符中，有多少个不同的子序列（把空集也考虑，最后-1即可）**
+**过程：遍历字符串，表示前i个字符的结果，到最后一个字符也就得到了答案**
+
+思路如下图:
+设定两个变量 `all`、`new`：
+**all**：当前长度的字符串 所拥有 不同子的序列 的个数
+**new**：当前字符（长度为i），在 i-1长度上的 所有子序列集合后加上当前字符 的个数
+
+> s = [a,b, a]
+> all = {} （空集）
+> 遍历到第一个a：{}   +   {a}
+> 遍历到第一个b：{}、{a}   +   {b}、{ab}  //在上一步的基础上让b当最后一个元素，并且拼接上去
+> 遍历到第二个a：{}、{a}、{b}、{ab}   +   {a}、{aa}、{ba}  //可以发现有重复，需要处理
+
+> 由上可得：
+> ​**当前all = 上一次的all + 当前字符的new - 重复值** （关键在于重复值怎么得到）
+> 由观察可知：**重复值，就是当前字符上一次出现时的new**，这里可以自己举几个例子观察
+
+![微信图片_20220610175740.png](https://pic.leetcode-cn.com/1654856879-FqaFUI-%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20220610175740.png)
+
+所以，我们可以利用map，记录每一个字符上一次出现时的new个数，不难得出code
+
+* java
+
+```java
+public int distinctSubseqII(String s) {
+	char[] chs = s.toCharArray();
+	int len = chs.length;
+    
+	//用map记录当前字符上一次出现时，new加了多少（一开始默认0）
+	Map<Character, Integer> map = new HashMap<>(); 
+
+	int all = 1; //一开始只有空集
+	for(int i = 0; i < len; i++){
+		int newCounts = all; //new在all基础上以当前字符结尾
+        //当前all = 上一次的all + 当前字符的new - 重复值
+        all = all + newCounts - map.getOrDefault(chs[i], 0); 
+            
+        //更新map
+        map.put(chs[i], newCounts);
+	}
+
+	return all - 1;
+}
+```
+
+由于结果过大，需要除余处理
+
+* java
+
+```java
+public int distinctSubseqII(String s) {
+	char[] chs = s.toCharArray();
+	int len = chs.length;
+    
+	//用map记录当前字符上一次出现时，new加了多少（一开始默认0）
+	Map<Character, Integer> map = new HashMap<>(); 
+
+    int m = 1000000007;
+	int all = 1; //一开始只有空集
+	for(int i = 0; i < len; i++){
+		int newCounts = all; 
+        all = ((all + newCounts) % m - map.getOrDefault(chs[i], 0) % m + m) % m; 
+            
+        //更新map
+        map.put(chs[i], newCounts);
+	}
+
+	return all - 1;
+}
+```
+
+> 对于除余处理说明：
+>
+> - 由数学性质 `(a + b + c) % m` 等价于 `(a%m + b%m + c%m) % m`，故上式中对 `all + newCounts` 和`map.getOrDefault(chs[i], 0)` 除余
+>
+> - 再加一个m，为了避免前面为负数，即保证整体 > 0，对结果没有影响，举个例子
+>
+>   `(25 - 10) % 6 = 3`
+>
+>   `(25 % 6 - 10 % 6) % 6 = (1 - 4 ) % 6 = -3`，出现负数再mod结果不一致，所以要保证为正数需要加6
+>
+>   `(25 % 6 - 10 % 6 + 6) % 6 = (1 - 4 + 6) % 6 = 3`，结果一致！
+
+#### 方法2：用数组代替map，实现加速
+
+思路一致，只是换成数组
+
+* java
+
+```java
+public int distinctSubseqII(String s) {
+	char[] chs = s.toCharArray();
+	int len = chs.length;
+    
+	//用数组代替map记录当前字符上一次出现时，new加了多少（一开始默认0）
+	int[] record = new int[26]; 
+
+    int m = 1000000007;
+	int all = 1; //一开始只有空集
+	for(int i = 0; i < len; i++){
+		int newCounts = all; 
+        all = ((all + newCounts) % m - record[chs[i] - 'a'] % m + m) % m;
+            
+        //更新数组
+        record[chs[i] - 'a'] = newCounts;
+	}
+
+	return all - 1;
+}
+```
+
