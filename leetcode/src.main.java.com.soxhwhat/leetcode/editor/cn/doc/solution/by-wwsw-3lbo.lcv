@@ -1,0 +1,26 @@
+[2351. 第一个出现两次的字母](https://leetcode.cn/problems/first-letter-to-appear-twice/description/)
+
+@[toc]
+
+# 模拟：用map标识是否已第一次出现
+
+若第一次出现，则放入map
+
+若第二次出现，则直接返回
+
+* go
+
+```go
+func repeatedCharacter(s string) byte {
+	mp := map[rune]struct{}{}
+	for _, c := range s {
+		if _, ok := mp[c]; !ok {
+			mp[c] = struct{}{}
+		} else {
+			return byte(c)
+		}
+	}
+	return s[0]
+}
+```
+
