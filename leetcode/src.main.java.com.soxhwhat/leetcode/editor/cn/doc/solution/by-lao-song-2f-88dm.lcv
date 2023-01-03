@@ -1,0 +1,163 @@
+> [leetcode第2042. 检查句子中的数字是否递增](https://leetcode.cn/problems/check-if-numbers-are-ascending-in-a-sentence/)
+
+[toc]
+
+## 三两种思路
+
+虽然是简单题，但还是值得说一下的。本题关键是如何高效地分词，然后是数字和字符串的转换。
+
+可以直接调用编程语言的 api，但是会比较低效。java 中，可以先调用字符串的`split`方法分词，然后用`parseInt`结合`try catch`转换为数字；也可以线正则表达式判断是否是数字，或最后调用`parseInt`方法。
+
+可以设置一个**哨兵变量** `preNum`，表示上一个被解析出来的数字，并将其初始化为 $-1$。这样可以避免在 for 循环中反复做边界判断。**这也是常用的技巧**。
+
+可以**从左到右遍历字符串，手动解析，这样更高效**。
+
+判断一个字符 `char c` 是不是数字，java 中可以使用 `Character.isDigit` 方法，但是这样需要对左右边界都进行比较，略低效，考虑到题目中仅限数字和小写字母，并且 `'9' < 'a'`，我们可以简化判断，详见代码注释。
+
+数字型字符串，转换为数字时，需要点技巧：从高位开始诸位遍历，每次对已解析出的部分乘以10，然后和下一位求和即可。
+
+0-9 范围内的char 型变量`c`，转换为 int 型，可以`(int)(c - '0')`。
+
+下面比较一下调编程语言 api 和 不调用 api的执行效率，差异还是挺大的。
+
+## 代码
+
+### 方法一：直接遍历，手动分词
+
+* java
+
+```java
+/**
+手动分词，不调用 字符串 split API 的解法
+执行用时：0 ms, 在所有 Java 提交中击败了100.00%的用户
+内存消耗：39.2 MB, 在所有 Java 提交中击败了97.54%的用户
+通过测试用例：98 / 98
+ */
+class Solution {
+    public boolean areNumbersAscending(String s) {
+        int n = s.length(), preNum = -1, curNum = 0; // preNum是上一个被解析出来的数字型 token，curNum是正在被解析中的数字型 token。将 preNum 设置成-1，可以避免在循环中做额外的判断。
+        char pre = ' '; // 前一个字符
+        for(int i = 0; i < n; i++){
+            char c = s.charAt(i);
+            if(c == ' '){ // 空格标志着上一个token 的结束，下个 token 的开始
+                if(pre <= '9'){ // 前一个字符，不是数字就是字母，因为'9' < 'a'，所以可简化判断条件，不必调用Character.isDigit
+                    if(curNum <= preNum)return false;
+                    preNum = curNum;
+                    curNum = 0;
+                }
+            }else if(c <= '9'){
+                curNum = curNum * 10 + (int)(c - '0');
+            }
+            pre = c;
+        }
+        return s.charAt(n - 1) <= '9' ? curNum > preNum : true; // s 没有尾随 空格，要注意判断最后一个字符是数字的情况
+    }
+}
+```
+
+### 方法二：使用 split 和 try catch
+
+* java
+
+```java
+/**
+调用 split 和 parseInt 这两个api来做，需要用到try catch。 
+执行用时：2 ms, 在所有 Java 提交中击败了31.56%的用户
+内存消耗：41.2 MB, 在所有 Java 提交中击败了9.02%的用户
+通过测试用例：98 / 98
+ */
+class Solution {
+    public boolean areNumbersAscending(String s) {
+        int preNum = -1;
+        for(String token: s.split(" ")){
+            try{
+                int curNum = Integer.parseInt(token);
+                if(curNum <= preNum)return false;
+                preNum = curNum;
+            }catch(Exception e){}
+        }
+        return true;
+    }
+}
+```
+
+### 方法三：使用 split 和正则
+
+* java
+
+```java
+import java.util.regex.Pattern;
+/**
+执行用时：4 ms, 在所有 Java 提交中击败了18.85%的用户
+内存消耗：41.7 MB, 在所有 Java 提交中击败了5.33%的用户
+通过测试用例：98 / 98
+ */
+class Solution {
+    public boolean areNumbersAscending(String s) {
+        int preNum = -1;
+        Pattern p = Pattern.compile("^[0-9]+$");
+        for(String token: s.split(" ")){
+            if(!p.matcher(token).matches())continue;
+            int curNum = Integer.valueOf(token);
+            if(curNum <= preNum)return false;
+            preNum = curNum;
+        }
+        return true;
+    }
+}
+```
+
+## 复杂度
+
+复杂度 $O(n)$，空间复杂度 $O(1)$。
+
+## 总结和扩展
+
+### AC 最重要
+
+方法一虽然高效，但是容易出错，需要处理各种边界情况。如果是竞赛中遇到本题，我大概会直接用方法二，毕竟时间优先，AC 更重要。
+
+### 避免在 for 循环中反复创建正则
+
+可以看到，使用正则表达式判断字符串是否是数字，更加低效。而且，如果使用不当，在 for 循环中反复创建正则对象，效率会更地下。比如下面的的代码中，for 循环里的 `token.matches`就会反复创建正则：
+
+* java
+
+```java
+/**
+执行用时：6 ms, 在所有 Java 提交中击败了7.79%的用户
+内存消耗：41.7 MB, 在所有 Java 提交中击败了5.33%的用户
+通过测试用例：98 / 98
+ */
+class Solution {
+    public boolean areNumbersAscending(String s) {
+        int preNum = -1;
+        for(String token: s.split(" ")){
+            if(!token.matches("^[0-9]+$"))continue;
+            int curNum = Integer.valueOf(token);
+            if(curNum <= preNum)return false;
+            preNum = curNum;
+        }
+        return true;
+    }
+}
+```
+
+### java 的 String.charAt方法略低效
+
+java的 `String.charAt`方法，会进行数组越界检查。所以，所过使用这个方法遍历字符串，要额外耗费时间。在不纠结空间复杂度的情况下，可以使用 `String.toCharArray` 方法，将字符串转换为一个匿名的 `char[]` 数组，然后搭配 **for-each** 循环进行遍历，这样不仅代码更简洁，而且更高效：
+
+* java
+
+```java
+
+for(int i = 0; i < n; i++){
+    char c = s.charAt(i);
+}
+
+for(char c: s.toCharString()){ // 牺牲一点空间复杂度，换取效率和简洁度
+
+}
+
+```
+

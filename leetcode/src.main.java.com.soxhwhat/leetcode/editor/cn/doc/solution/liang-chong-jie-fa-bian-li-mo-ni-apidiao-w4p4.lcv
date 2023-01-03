@@ -1,0 +1,93 @@
+## 解法一：遍历模拟
+
+遍历字符串，当遇到数字时，将这个字符串转化为int与之前的数进行比较。
+
+- 时间复杂度：$O(n)$
+- 空间复杂度：$O(1)$
+
+* []
+
+```java
+class Solution {
+    public boolean areNumbersAscending(String s) { 
+        int pre = -1, cur = 0, i = -1, n = s.length();
+        char[] arr = s.toCharArray();
+        while (++i < n) {
+            if (Character.isDigit(arr[i])) {
+                cur = arr[i] - '0';
+                while (i + 1 < n && Character.isDigit(arr[i + 1])) cur = cur * 10 + arr[++i] - '0';
+                if (cur <= pre) return false;
+                pre = cur; 
+            } 
+        }
+        return true;
+    }
+}
+```
+
+* []
+
+```cpp
+class Solution {
+public:
+    bool areNumbersAscending(string s) {
+        int pre = -1, cur = 0, i = -1, n = s.length();
+        while (++i < n) {
+            if (isdigit(s[i])) {
+                cur = s[i] - '0';
+                while (i + 1 < n && isdigit(s[i + 1])) cur = cur * 10 + s[++i] - '0';
+                if (cur <= pre) return false;
+                pre = cur; 
+            } 
+        }
+        return true;
+    }
+};
+```
+
+## 解法二：API模拟
+
+通过空格分割字符串后，判断当前字符串首字母是否为数字，若是数字，则与之前出现的数字进行比较，初始话之前出现的数字为-1。<br>
+还可以将字母全部替换掉，直接数字的判断。
+
+- 时间复杂度：$O(n)$
+- 空间复杂度：$O(1)$
+
+* []
+
+```java
+class Solution {
+    public boolean areNumbersAscending(String s) { 
+        int pre = -1; 
+        for (String x : s.replaceAll("[a-z]", "").split(" ")) { //去掉字母后以空格分割
+            if (x.length() <= 0) continue;
+            if (Integer.parseInt(x) <= pre) return false;
+            pre = Integer.parseInt(x);
+        }
+        return true;
+    }
+}
+```
+
+* []
+
+```cpp
+class Solution {
+public:
+    bool areNumbersAscending(string s) {
+        stringstream str(s);
+        int pre = -1;
+        while (str >> s) {
+            if (isdigit(s[0])) {
+                if (stoi(s) <= pre) return false;
+                pre = stoi(s);
+            }
+        }
+        return true;
+    }
+};
+```
+
+--- 
+
+如果有问题,欢迎评论区交流, 如果有帮助到你，请给题解点个赞和收藏哈~~~

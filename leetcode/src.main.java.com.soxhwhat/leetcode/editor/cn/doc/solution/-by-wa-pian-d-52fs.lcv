@@ -1,0 +1,29 @@
+### 解题思路
+
+此处撰写解题思路
+
+### 代码
+
+* java
+
+```java
+class Solution {
+
+	public boolean areNumbersAscending(String s) {
+		for (int i = 0, last = -1, num = 0; i <= s.length(); i++) {
+			char cur = i < s.length() ? s.charAt(i) : ' ';
+			if (cur == ' ' && num != 0) {
+				if (num <= last)
+					return false;
+				last = num;
+				num = 0;
+			} else if (cur >= '0' && cur <= '9') {
+				num = num * 10 + cur - '0';
+			}
+		}
+		return true;
+	}
+
+}
+```
+
