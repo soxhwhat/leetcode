@@ -1,0 +1,61 @@
+### 解题思路
+
+1. 分别找到异或后小于high和小于low-1的数量，差值就是这个数之前能和他配对的漂亮数数量。
+2. 两个数异或后，相对于第三个数比较大小，两个数从高位向低位依次异或结果与第三数相同位置数比。在高位相同的情况下，这个位置小，则后续全小，这个位置相等则不分大小，需要看后续的大小比较。
+3. 批量数据按位比较选择字典树，每个数拉高高位，从高到低入树，同时每一个位置记录经过这里数字的数量cnt。
+4. 两数异或同边界比较时，如果边界位置为1，则异或后为0的那一只全部数字都小于边界。
+5. 异或后同边界的那一只无法比较大小，如果有后续继续找。
+
+### 代码
+
+* java
+
+```java
+class Solution {
+	int n = Integer.toBinaryString(100000).length();
+
+	public int countPairs(int[] nums, int low, int high) {
+		Node root = new Node();
+		int h = high;
+		int l = low - 1;
+		int ans = 0;
+		for (int num : nums) {
+			ans += find(root, num, h) - find(root, num, l);
+			add(root, num);
+		}
+		return ans;
+	}
+
+	private void add(Node root, int num) {
+		Node node = root;
+		for (int i = n; i >= 0; i--) {
+			int cur = (num >> i) & 1;
+			node = node.computeIfAbsent(cur, k -> new Node());
+			node.cnt++;
+		}
+
+	}
+
+	private int find(Node root, int num, int range) {
+		Node node = root;
+		int ans = 0;
+		for (int i = n; i >= 0 && node != null; i--) {
+			int cur = (num >> i) & 1;
+			int r = (range >> i) & 1;
+			if (r == 1) {
+				ans += node.getOrDefault(cur, new Node()).cnt;
+			}
+			node = node.get(cur ^ r);
+		}
+		if (node != null) {
+			ans += node.cnt;
+		}
+		return ans;
+	}
+
+	class Node extends HashMap<Integer, Node> {
+		int cnt;
+	}
+}
+```
+

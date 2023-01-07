@@ -1,0 +1,31 @@
+### 思路
+
+使用二分查找求最值，同时使用贪心策略，若要使`nums[index]`的值最大化，则`index`两侧数据都应呈向外侧递减趋势，注意要保证数组中最小值为`1`。
+
+### 代码
+
+* typescript
+
+```typescript
+function maxValue(n: number, index: number, maxSum: number): number {
+    // 校验nums[index]为num时的有效性
+    const check = (num) => {
+        // 计算nums[index]为num时，左、右侧最小值
+        let left = Math.max(1, num - index), right = Math.max(1, num - (n - index - 1));
+        let sumL = (left + num) * (num - left + 1) / 2 + (index - (num - left)), sumR = (right + num) * (num - right + 1) / 2 + (n - index - 1 - (num - right));
+        return sumL + sumR - num <= maxSum;
+    }
+    // 使用二分查找
+    let left = 0, right = maxSum;
+    while(left < right){
+        let mid = Math.ceil((left + right) / 2);
+        if(check(mid)){
+            left = mid;
+        }else{
+            right = mid - 1;
+        }
+    }
+    return left;
+};
+```
+
