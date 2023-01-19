@@ -1,0 +1,50 @@
+#### 动态规划
+
+基于闫式dp分析法。
+![LC_10_正则表达式匹配_1.jpg](https://pic.leetcode.cn/1668777104-MxPOFH-LC_10_%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8C%B9%E9%85%8D_1.jpg)
+![LC_10_正则表达式匹配_2.jpg](https://pic.leetcode.cn/1668777113-xsOKcm-LC_10_%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8C%B9%E9%85%8D_2.jpg)
+综上 ,
+$f[i][j] = \begin {cases}
+f[i-1][j-1] ~~\&\& ~~(s[i]==p[j] ~||~ '.'==p[j])&\text{ if }~p[j]\neq * \\
+f[i][j-2] ~~||~~(f[i-1][j] ~~\&\&~~(s[i] == p[j-1] ~~||~~'.'==p[j-1])&\text{ if }~p[j]=*
+\end{cases}$
+
+上式用代码表示
+
+* cpp
+
+```cpp
+if('*'!=p[j]) f[i][j] = i && f[i-1][j-1] && (p[j]==s[i]||p[j]=='.'); // i = 0 时，i -1 越界
+else if('*'==p[j]) {
+    if(i) f[i][j] = f[i][j-2] || (f[i-1][j]&&(s[i]==p[j-1]||'.'==p[j-1]));//i=0 时，i-1越界
+    else f[i][j] = f[i][j-2];
+}
+```
+
+#### 优化dp
+
+* cpp
+
+```cpp
+class Solution {
+public:
+    bool isMatch(string s, string p) {
+        int n = s.size();
+        int m = p.size();
+        s = ' '+s,p = ' '+p;//f[0][0]表示s空p空,为了下标对应，s和p后移一格
+        vector<vector<bool>> f(n+1,vector<bool>(m+1));//f[i][j],表示所有s[1~i]和p[1~j]的匹配方案
+        f[0][0] = true;//s空p空 , 有一种匹配方案
+        for(int i = 0;i<=n;i++)
+            for(int j = 1;j<=m;j++){
+                if(j+1<=m&&'*'==p[j+1]) continue;//p[j+1]=='*' , 那么p[j]可以取0个，跳过p[j]的判断。
+                if('*'!=p[j]) f[i][j] = i && f[i-1][j-1] && (p[j]==s[i]||p[j]=='.'); // i = 0 时，i -1 越界
+                else if('*'==p[j]) f[i][j] = f[i][j-2] || i && (f[i-1][j] && (s[i] == p[j-1] || '.'==p[j-1]));//同上
+            }
+        return f[n][m];
+    }
+}; 
+```
+
+时间复杂度 $O(n\times m)$ ， $n$ 是 $s$ 的长度，$m$ 是 $p$ 的长度 ， 状态转移的时间复杂度 $O(n\times m)$。
+
+空间复杂度 $O(n\times m)$ $dp$ 数组的空间复杂度 $O(n\times m)$ 。
