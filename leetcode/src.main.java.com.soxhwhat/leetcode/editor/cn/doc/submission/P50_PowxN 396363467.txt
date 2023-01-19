@@ -1,0 +1,23 @@
+class Solution {
+    public double myPow(double x, int n) {
+        boolean flag = n < 0;
+        double res = 1;
+        double k = Math.abs(x);
+        int t = Math.abs(n);
+        while (t != 0) {
+            if ((t & 1) == 1) res *= k;
+            k *= k;
+            t >>= 1;
+        }
+        return flag ? 1 / res : res;
+    }
+}
+
+//total_testcases:305
+//total_correct:284
+//input_formatted:-13.62608
+3
+//expected_output:-2529.95504
+//code_output:2529.95504
+//last_testcase:-13.62608
+3
