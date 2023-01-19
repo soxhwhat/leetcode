@@ -25,13 +25,13 @@ class P10_RegularExpressionMatching {
             f[0][0] = true;
             for (int i = 0; i <= n; i++) {
                 for (int j = 1; j <= m; j++) {
-                    if (j + 1 <= m && p.charAt(j + 1) == '*') continue;//当前位应该和下一位看作整体
+                    if (j + 1 <= m && p.charAt(j + 1) == '*') continue;
                     if (p.charAt(j) != '*') {
-                        boolean flag = (p.charAt(j) == s.charAt(i)) || (p.charAt(j) == '.');
-                        f[i][j] = i != 0 && f[i - 1][j - 1] && flag;
+                        boolean flag = (s.charAt(i) == p.charAt(j)) || p.charAt(j) == '.';
+                        f[i][j] = (i > 0 && f[i - 1][j - 1] && flag);
                     } else {
-                        boolean flag = (p.charAt(j - 1) == s.charAt(i)) || (p.charAt(j - 1) == '.');
-                        f[i][j] = f[i][j - 2] || (i != 0 && f[i - 1][j] && flag);
+                        boolean flag = (s.charAt(i) == p.charAt(j -1) || p.charAt(j - 1) == '.');
+                        f[i][j] = (f[i][j - 2]) || (i > 0 && f[i - 1][j] && flag);
                     }
                 }
             }
