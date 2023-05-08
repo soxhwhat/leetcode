@@ -17,13 +17,14 @@ class Solution {
         public int romanToInt(String s) {
             char[] array = s.toCharArray();
             int res = getValue(array[0]);
-            for (int i = 1; i < array.length; i ++) {
+            for (int i = 1; i < array.length; i++) {
                 int pre = getValue(array[i - 1]);
                 int value = getValue(array[i]);
                 res += pre >= value ? value : value - 2 * pre;
             }
             return res;
         }
+
 
         public int getValue(char c) {
             return switch (c) {
@@ -37,7 +38,6 @@ class Solution {
                 default -> 0;
             };
         }
-
     }
 //leetcode submit region end(Prohibit modification and deletion)
 
