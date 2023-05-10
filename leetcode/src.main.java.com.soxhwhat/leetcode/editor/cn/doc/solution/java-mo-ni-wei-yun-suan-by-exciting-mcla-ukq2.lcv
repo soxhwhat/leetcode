@@ -1,0 +1,43 @@
+# 思路
+
+实在太简单了，所以我又来玩位运算了……
+
+`1 <= ranks[i] <= 13`，计数过程只要发现某个桶里数量达到`3`即可退出，所以声明一个`int`，给每个数分配`2`位来计数即可。
+
+# Code
+
+* Java
+
+```Java
+class Solution {
+
+    public String bestHand(int[] ranks, char[] suits) {
+        if (isFlush(suits)) {
+            return "Flush";
+        }
+
+        boolean isPair = false;
+        int cnt = 0;
+        for (int rank : ranks) {
+            int mark = 1 << (rank - 1 << 1);
+            if ((cnt & mark << 1) != 0) {
+                return "Three of a Kind";
+            }
+
+            isPair |= (cnt & mark) != 0;
+            cnt += mark;
+        }
+        return isPair ? "Pair" : "High Card";
+    }
+
+    private static boolean isFlush(char[] suits) {
+        for (int c = suits[0], i = suits.length - 1; i > 0; i--) {
+            if (suits[i] != c) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+
